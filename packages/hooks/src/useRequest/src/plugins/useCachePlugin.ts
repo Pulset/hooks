@@ -79,7 +79,7 @@ const useCachePlugin: Plugin<any, any[]> = (
         return {
           loading: false,
           data: cacheData?.data,
-          returnNow: true,
+          returnNow: true, // 通过这个字段判断，是否需要请求
         };
       } else {
         // If the data is stale, return data, and request continue

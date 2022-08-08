@@ -19,11 +19,13 @@ function useRequestImplement<TData, TParams extends any[]>(
     manual,
     ...rest,
   };
-
+  // 通过 Ref 存储请求函数
   const serviceRef = useLatest(service);
 
+  // 更新函数
   const update = useUpdate();
 
+  // 通过 useCreation 缓存
   const fetchInstance = useCreation(() => {
     const initState = plugins.map((p) => p?.onInit?.(fetchOptions)).filter(Boolean);
 
@@ -35,7 +37,9 @@ function useRequestImplement<TData, TParams extends any[]>(
     );
   }, []);
   fetchInstance.options = fetchOptions;
-  // run all plugins hooks
+  // run all plugins hooks，把所有的插件功能分离出来，循环遍历。
+  // 当 fetchOptions 没有对应字段时，每个 plugins 都设置了 return {} 的条件，这样就不执行后面的逻辑。
+  // 很巧妙的把不同的插件进行了分离
   fetchInstance.pluginImpls = plugins.map((p) => p(fetchInstance, fetchOptions));
 
   useMount(() => {

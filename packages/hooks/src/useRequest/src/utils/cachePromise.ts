@@ -4,7 +4,7 @@ const cachePromise = new Map<CachedKey, Promise<any>>();
 const getCachePromise = (cacheKey: CachedKey) => {
   return cachePromise.get(cacheKey);
 };
-
+// 感觉是为了避免竞争，加锁了？
 const setCachePromise = (cacheKey: CachedKey, promise: Promise<any>) => {
   // Should cache the same promise, cannot be promise.finally
   // Because the promise.finally will change the reference of the promise

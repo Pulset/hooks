@@ -36,12 +36,14 @@ export default class Fetch<TData, TParams extends any[]> {
     this.subscribe();
   }
 
+  // 开启的 plugin 都执行对应的生命钩子，对应每个 plugin.js 里的生命函数
   runPluginHandler(event: keyof PluginReturn<TData, TParams>, ...rest: any[]) {
     // @ts-ignore
     const r = this.pluginImpls.map((i) => i[event]?.(...rest)).filter(Boolean);
     return Object.assign({}, ...r);
   }
 
+  // 发送 request
   async runAsync(...params: TParams): Promise<TData> {
     this.count += 1;
     const currentCount = this.count;
@@ -52,6 +54,7 @@ export default class Fetch<TData, TParams extends any[]> {
       ...state
     } = this.runPluginHandler('onBefore', params);
 
+    // console.log(stopNow, 'stopNow', returnNow, 'returnNow');
     // stop request
     if (stopNow) {
       return new Promise(() => {});
@@ -63,6 +66,7 @@ export default class Fetch<TData, TParams extends any[]> {
       ...state,
     });
 
+    // 在保鲜返回内，直接resolve缓存的值
     // return now
     if (returnNow) {
       return Promise.resolve(state.data);
@@ -71,9 +75,9 @@ export default class Fetch<TData, TParams extends any[]> {
     this.options.onBefore?.(params);
 
     try {
-      // replace service
+      // replace service cacheKey有值的时候，会去缓存的promise
       let { servicePromise } = this.runPluginHandler('onRequest', this.serviceRef.current, params);
-
+      // console.log(servicePromise);
       if (!servicePromise) {
         servicePromise = this.serviceRef.current(...params);
       }
@@ -86,7 +90,6 @@ export default class Fetch<TData, TParams extends any[]> {
       }
 
       // const formattedResult = this.options.formatResultRef.current ? this.options.formatResultRef.current(res) : res;
-
       this.setState({
         data: res,
         error: undefined,

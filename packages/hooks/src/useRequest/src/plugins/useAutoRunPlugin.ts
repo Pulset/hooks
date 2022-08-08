@@ -42,6 +42,7 @@ const useAutoRunPlugin: Plugin<any, any[]> = (
   };
 };
 
+// plugin 初始化的时候 loading: true
 useAutoRunPlugin.onInit = ({ ready = true, manual }) => {
   return {
     loading: !manual && ready,
