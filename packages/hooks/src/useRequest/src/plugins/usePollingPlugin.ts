@@ -18,11 +18,13 @@ const usePollingPlugin: Plugin<any, any[]> = (
     }
     unsubscribeRef.current?.();
   };
-
+  console.log(pollingInterval, 'pollingInterval');
   useUpdateEffect(() => {
     if (!pollingInterval) {
       stopPolling();
+      return;
     }
+    fetchInstance.refresh();
   }, [pollingInterval]);
 
   if (!pollingInterval) {
